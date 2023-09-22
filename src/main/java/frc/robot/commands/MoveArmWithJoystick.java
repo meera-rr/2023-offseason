@@ -8,24 +8,39 @@ public class MoveArmWithJoystick extends CommandBase {
   /** Creates a new MoveArmWithJoystick. */
 
   //initialize your subsystems, controllers
-  XboxController joystick1;
-  public MoveArmWithJoystick(ArmSubsystem armSubsystem, XboxController joystick1) {
+  private ArmSubsystem armSubsystem;
+  private XboxController joystick;
+
+
+  public MoveArmWithJoystick(ArmSubsystem armSubsystem, XboxController joystick) {
     //add your parameters to the command
+    this.armSubsystem = armSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    this.joystick1 = joystick1;
+    this.joystick = joystick;
+    addRequirements(armSubsystem);
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    armSubsystem.coast();
+  }
 
   @Override
   public void execute() {
-    double joystickArmPower = joystick1.getLeftY(); //use this joystick armpower to set power to your motors
+    if (Math.abs(joystick.getLeftY()) <= 0.1) {
+      armSubsystem.setPower(0);
+      armSubsystem.brake();   
+    }
+    else {
+      armSubsystem.coast();
+      armSubsystem.setPower(0.5);
+    }
   }
 
 
   @Override
   public void end(boolean interrupted) {
+    armSubsystem.coast();
     
   }
 
